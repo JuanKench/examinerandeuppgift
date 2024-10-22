@@ -7,29 +7,18 @@ public class PTFileWriter {
 
     public void writeToFile(Member member) {
         try (
-            BufferedWriter writer = new BufferedWriter(new FileWriter("src\\PTFile.txt"))
+            BufferedWriter writer = new BufferedWriter(new FileWriter("src\\PTFile.txt", true))
         ) {
             boolean memberExists = false;
-            // Why is it async, it should not be. This breaks writing to PTFile
-            System.out.println("pre");
             ArrayList<Member> members = getPTList();
-            System.out.println("after");
-
             for (Member m : members) {
-                System.out.println("m1: " + m.getSocialSecurity());
-            }
-            System.out.println("member" + member.getSocialSecurity());
-            for (Member m : members) {
-                System.out.println("m" + m.getSocialSecurity());
                 if (m.getSocialSecurity().equals(member.getSocialSecurity())) {
-                    System.out.printf("old");
                     memberExists = true;
                     m.incramentSignins();
                     m.addSigninDate(new Date());
                 }
             }
             if (!memberExists) {
-                System.out.println("new");
                 member.incramentSignins();
                 member.addSigninDate(new Date());
                 members.add(member);
@@ -63,7 +52,6 @@ public class PTFileWriter {
             while ((line = br.readLine()) != null) {
                 if(member.getSigninDates() != null){
                     member = new Member();
-                    System.out.println("new");
                 }
                 if(line.contains(", ")) {
                     String[] arr = line.split(", ");
@@ -76,13 +64,8 @@ public class PTFileWriter {
                 }
                 if(member.getSigninDates() != null) {
                     members.add(member);
-                    System.out.println("add");
                 }
             }
-            members.forEach(member1 -> {
-                System.out.println("m2: " + member1.getSocialSecurity());
-            });
-
             return members;
 
 
