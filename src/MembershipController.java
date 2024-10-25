@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class MembershipController {
-
-
+    Scanner scanner = new Scanner(System.in);
+    private PTFileWriter ptFileWriter = new PTFileWriter();
     public MembershipController() {
 
     }
@@ -77,5 +77,41 @@ public class MembershipController {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public void checkMemberStatus() {
+        System.out.println("Välkommen skriv in ditt namn eller personnummer:");
+    String input = scanner.nextLine();
+
+    ArrayList<Member> members = null;
+    Member member = null;
+
+        try {
+        if (input.matches("\\d+")) {
+            member = getMemberFromSocialSecurity(input);
+            members = new ArrayList<>();
+            members.add(member);
+        } else {
+            members = getMembersFromName(input);
+        }
+
+        Date today = new Date();
+        Map<Member, Boolean> paymentStatus = getHasPayed(members, today);
+
+        for (Map.Entry<Member, Boolean> entry : paymentStatus.entrySet()) {
+            Member m = entry.getKey();
+            boolean hasPayed = entry.getValue();
+
+            if (hasPayed) {
+                System.out.println("Välkommen in.");
+                ptFileWriter.writeToFile(m);
+            } else {
+                System.out.println("Du behöver förnya din prenumeration till gymmet.");
+            }
+        }
+
+    } catch (MissingMemberException e) {
+        System.out.println("Du behöver bli en medlem om du vill använda gymmet.");
+    }
     }
 }
